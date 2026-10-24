@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Film Creator{% endblock %}
+
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p class="muted">Manage users and moderate content. Passwords and API keys are never shown here.</p>
+  </div>
+</section>
+
+<div class="stats-row reveal">
+  <div class="stat"><span>{{ stats.users }}</span> Users</div>
+  <div class="stat"><span>{{ stats.stories }}</span> Stories</div>
+  <div class="stat"><span>{{ stats.admins }}</span> Admins</div>
+</div>
+
+<section class="admin-section reveal">
+  <h2>Users</h2>
+  <p class="muted">Email is shown only to admins for account support and moderation.</p>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Stories</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td><span class="badge badge-{{ user.role }}">{{ user.role }}</span></td>
+          <td>{{ user.story_count }}</td>
+          <td>{{ user.created_at }}</td>
+          <td class="table-actions">
+            <form method="post" action="{{ url_for('admin_set_role', user_id=user.id) }}" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="role" aria-label="Role for {{ user.username }}">
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>user</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>admin</option>
+              </select>
+              <button type="submit" class="btn btn-secondary btn-sm">Set role</button>
+            </form>
+            {% if user.id != current_user.id %}
+            <form method="post" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete user {{ user.username }} and all their stories?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-section reveal">
+  <h2>Recent stories (moderation)</h2>
+  <p class="muted">Admins can remove public-facing moderation targets. Full private story bodies are not displayed here.</p>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Author</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for story in stories %}
+        <tr>
+          <td>{{ story.id }}</td>
+          <td>{{ story.title }}</td>
+          <td>{{ story.genre }}</td>
+          <td>{{ story.username }}</td>
+          <td>{{ story.updated_at }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin_delete_story', story_id=story.id) }}" onsubmit="return confirm('Remove this story?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">No stories yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Story Writing Studio — Film Creator{% endblock %}
+
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <h1>Story Writing Studio</h1>
+    <p class="muted">Write, edit, and organize your movie stories. Only you can see them.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('story_new') }}">New story</a>
+</section>
+
+{% if stories %}
+  <div class="story-list">
+    {% for story in stories %}
+      <article class="story-row reveal">
+        <div>
+          <h2><a href="{{ url_for('story_edit', story_id=story.id) }}">{{ story.title }}</a></h2>
+          <p class="meta">{{ story.genre }} · Updated {{ story.updated_at }}</p>
+        </div>
+        <div class="row-actions">
+          <a class="btn btn-secondary btn-sm" href="{{ url_for('story_edit', story_id=story.id) }}">Edit</a>
+          <a class="btn btn-ghost btn-sm" href="{{ url_for('story_download_txt', story_id=story.id) }}">TXT</a>
+          <a class="btn btn-ghost btn-sm" href="{{ url_for('story_download_pdf', story_id=story.id) }}">PDF</a>
+          <form method="post" action="{{ url_for('story_delete', story_id=story.id) }}" onsubmit="return confirm('Delete this story permanently?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state reveal">
+    <h2>No stories yet</h2>
+    <p>Start your first film draft in the studio.</p>
+    <a class="btn btn-primary" href="{{ url_for('story_new') }}">Write a story</a>
+  </div>
+{% endif %}
+{% endblock %}

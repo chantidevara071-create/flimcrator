@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}AI Story Assistant — Film Creator{% endblock %}
+
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <h1>AI Story Assistant</h1>
+    <p class="muted">Generate story ideas, plots, characters, scenes, and dialogues from a genre and prompt.</p>
+  </div>
+</section>
+
+{% if not ai_configured %}
+  <div class="banner banner-warn reveal" role="status">
+    <strong>AI API key not configured.</strong>
+    Set the <code>OPENAI_API_KEY</code> environment variable (see <code>.env.example</code>) to enable generation.
+    Until then, the form below will show a friendly error instead of fake results.
+  </div>
+{% else %}
+  <div class="banner banner-ok reveal" role="status">
+    AI Story Assistant is connected and ready.
+  </div>
+{% endif %}
+
+<form method="post" action="{{ url_for('ai_assistant') }}" class="ai-form reveal">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <label>
+      Generation type
+      <select name="mode">
+        {% for key, label in modes.items() %}
+          <option value="{{ key }}" {% if form_data.mode == key %}selected{% endif %}>
+            {{ key|capitalize }} — {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Genre
+      <select name="genre">
+        {% for g in genres %}
+          <option value="{{ g }}" {% if form_data.genre == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <label>
+    Your prompt
+    <textarea name="prompt" rows="6" maxlength="4000" required placeholder="Example: A lonely lighthouse keeper discovers a ship that only appears during solar eclipses...">{{ form_data.prompt }}</textarea>
+  </label>
+  <button type="submit" class="btn btn-primary">Generate</button>
+</form>
+
+{% if error %}
+  <div class="banner banner-warn reveal" role="alert">{{ error }}</div>
+{% endif %}
+
+{% if result %}
+  <section class="ai-result reveal">
+    <div class="result-head">
+      <h2>Generated result</h2>
+      <button type="button" class="btn btn-secondary btn-sm" data-copy-target="#ai-output">Copy</button>
+    </div>
+    <pre id="ai-output" class="ai-output">{{ result }}</pre>
+    <p class="muted">Tip: paste this into your Story Writing Studio and refine it.</p>
+    <a class="btn btn-ghost" href="{{ url_for('story_new') }}">Open new story</a>
+  </section>
+{% endif %}
+{% endblock %}

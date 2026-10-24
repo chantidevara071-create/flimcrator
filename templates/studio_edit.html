@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{% if story %}Edit {{ story.title }}{% else %}New Story{% endif %} — Film Creator{% endblock %}
+
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('studio') }}">← Back to Studio</a></p>
+    <h1>{% if story %}Edit story{% else %}New story{% endif %}</h1>
+    <p class="muted" id="save-status">{% if story %}Last saved {{ story.updated_at }}{% else %}Unsaved draft{% endif %}</p>
+  </div>
+  {% if story %}
+  <div class="row-actions">
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('story_download_txt', story_id=story.id) }}">Download TXT</a>
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('story_download_pdf', story_id=story.id) }}">Download PDF</a>
+  </div>
+  {% endif %}
+</section>
+
+<form
+  method="post"
+  class="story-form reveal"
+  id="story-form"
+  action="{% if story %}{{ url_for('story_edit', story_id=story.id) }}{% else %}{{ url_for('story_new') }}{% endif %}"
+  data-autosave="{% if story %}true{% else %}false{% endif %}"
+>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <label class="span-2">
+      Story title
+      <input type="text" name="title" maxlength="200" required
+        value="{{ form.title if form else (story.title if story else '') }}">
+    </label>
+    <label>
+      Genre
+      <select name="genre">
+        {% set selected = form.genre if form else (story.genre if story else 'Drama') %}
+        {% for g in genres %}
+          <option value="{{ g }}" {% if g == selected %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <label>
+    Characters
+    <textarea name="characters" rows="8" maxlength="50000" placeholder="Names, traits, relationships, arcs...">{{ form.characters if form else (story.characters if story else '') }}</textarea>
+  </label>
+
+  <label>
+    Scenes
+    <textarea name="scenes" rows="10" maxlength="50000" placeholder="Scene-by-scene outline, locations, beats...">{{ form.scenes if form else (story.scenes if story else '') }}</textarea>
+  </label>
+
+  <label>
+    Dialogues
+    <textarea name="dialogues" rows="10" maxlength="50000" placeholder="Key lines and conversations...">{{ form.dialogues if form else (story.dialogues if story else '') }}</textarea>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Save story</button>
+    <a class="btn btn-secondary" href="{{ url_for('studio') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

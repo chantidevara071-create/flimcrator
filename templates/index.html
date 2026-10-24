@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Film Creator — Cinematic Story Studio{% endblock %}
+{% block body_class %}page-home{% endblock %}
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-content reveal">
+    <p class="brand-mark">Film Creator</p>
+    <h1>Stories worth putting on screen</h1>
+    <p class="hero-lead">Write, organize, and refine movie stories in a dark cinematic workspace built for creators.</p>
+    <div class="hero-actions">
+      {% if current_user %}
+        <a class="btn btn-primary" href="{{ url_for('studio') }}">Open Studio</a>
+        <a class="btn btn-secondary" href="{{ url_for('ai_assistant') }}">Try AI Assistant</a>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('signup') }}">Start Creating</a>
+        <a class="btn btn-secondary" href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="reel reel-a"></div>
+    <div class="reel reel-b"></div>
+    <div class="spotlight"></div>
+  </div>
+</section>
+
+<section class="section features" id="features">
+  <div class="section-inner">
+    <h2 class="reveal">Built for filmmakers and writers</h2>
+    <p class="section-lead reveal">Everything you need to draft a film story — from first idea to downloadable script notes.</p>
+    <div class="feature-grid">
+      <article class="feature reveal">
+        <h3>Story Writing Studio</h3>
+        <p>Capture title, genre, characters, scenes, and dialogue in one private workspace with save and auto-save.</p>
+      </article>
+      <article class="feature reveal">
+        <h3>AI Story Assistant</h3>
+        <p>Generate ideas, plots, characters, scenes, and dialogues from a genre and prompt — powered by a real AI API.</p>
+      </article>
+      <article class="feature reveal">
+        <h3>Private &amp; Secure</h3>
+        <p>Your stories stay yours. Password hashing, sessions, CSRF protection, and ownership checks keep work locked down.</p>
+      </article>
+      <article class="feature reveal">
+        <h3>Export Anytime</h3>
+        <p>Download finished drafts as TXT or PDF so you can share notes with collaborators offline.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section cta-band">
+  <div class="section-inner reveal">
+    <h2>Ready for your next scene?</h2>
+    <p>Create a free account and open the studio in minutes.</p>
+    {% if current_user %}
+      <a class="btn btn-primary" href="{{ url_for('studio') }}">Go to Studio</a>
+    {% else %}
+      <a class="btn btn-primary" href="{{ url_for('signup') }}">Create account</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign up — Film Creator{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<section class="auth-panel reveal">
+  <h1>Join Film Creator</h1>
+  <p class="muted">Create a private account to write and save your movie stories.</p>
+  <form method="post" action="{{ url_for('signup') }}" class="form" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>
+      Username
+      <input type="text" name="username" value="{{ username or '' }}" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+" autocomplete="username">
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" value="{{ email or '' }}" required maxlength="120" autocomplete="email">
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" required minlength="8" maxlength="128" autocomplete="new-password">
+    </label>
+    <label>
+      Confirm password
+      <input type="password" name="confirm_password" required minlength="8" maxlength="128" autocomplete="new-password">
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Create account</button>
+  </form>
+  <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+</section>
+{% endblock %}
